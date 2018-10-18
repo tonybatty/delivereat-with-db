@@ -5,6 +5,10 @@ import '../styles/App.scss';
 class App extends React.Component {
   constructor(){
     super();
+
+    this.state = {
+      dishes: {},
+    }
   }
 
   render(){
