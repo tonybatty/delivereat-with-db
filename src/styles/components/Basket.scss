@@ -1,0 +1,71 @@
+@import "../main.scss";
+
+.basket {
+  display: flex;
+  flex-direction: column;
+  background-color: $foreground-color;
+  border: 1px solid $line-color-light;
+  box-shadow: 0px 8px 16px 0px rgba(124, 124, 124, 0.2);
+  padding: 0 10px;
+
+  &__checkout-btn {
+    width: 100%;
+    margin: 10px 0;
+    order: 1;
+  }
+
+  &__subtotal {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__delivery {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__total {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.basket-expanded {
+  display: none;
+}
+
+.basket__expand {
+  display: unset;
+}
+
+/* Tablet Layout */
+@media (min-width: 768px) {
+  .basket-expanded {
+    display: unset;
+    order: 2;
+  }
+
+  .basket-view {
+    display: none;
+  }
+
+  &__checkout-btn {
+    order: 1;
+  }
+}
+
+/* Desktop Layout */
+@media (min-width: 960px) {
+  .basket-expanded {
+    display: unset;
+    order: 2;
+  }
+
+  .basket-view {
+    display: none;
+  }
+
+  &__checkout-btn {
+    order: unset;
+  }
+}

@@ -21,7 +21,7 @@ app.get("/", function(req, res) {
 });
 
 // get dishes
-app.get("/api/dishes", function(req, res) {
+app.get("/api/dish", function(req, res) {
   db.any("SELECT * FROM dish")
     .then(function(data) {
       res.json(data);
@@ -32,7 +32,7 @@ app.get("/api/dishes", function(req, res) {
 });
 
 // get transaction
-app.get("/api/transactions", function(req, res) {
+app.get("/api/transaction", function(req, res) {
   db.any(
     `
   SELECT * FROM transaction
@@ -47,11 +47,11 @@ app.get("/api/transactions", function(req, res) {
 });
 
 // get transactions by id
-app.get("/api/transactions/:id", function(req, res) {
+app.get("/api/transaction/:id", function(req, res) {
   const id = req.params.id;
   db.any(
     `
-  SELECT dish_transaction.order_id, dish.name, dish.price, dish_transaction.quantity
+  SELECT dish_transaction.order_id, dish.dish, dish.price, dish_transaction.quantity
   FROM dish_transaction, dish, transaction
   WHERE transaction.id = dish_transaction.order_id
     AND dish_transaction.dish_id = dish.id
@@ -68,7 +68,7 @@ app.get("/api/transactions/:id", function(req, res) {
 });
 
 // get dish by id
-app.get("/api/dishes/:id", function(req, res) {
+app.get("/api/dish/:id", function(req, res) {
   const id = req.params.id;
   db.any(
     `
@@ -85,25 +85,59 @@ app.get("/api/dishes/:id", function(req, res) {
     });
 });
 
+// get dishes by category
+app.get("/api/category", function(req, res) {
+  db.any(
+    `SELECT dish.category_id, category.category, dish.id, dish.dish, dish.price FROM dish, category
+  WHERE dish.category_id = category.id`
+  )
+    .then(function(data) {
+      let categories = {};
+
+      data.forEach(dish => {
+        console.log(dish);
+        let dishToSave = { dishId: dish.id, name: dish.dish, price: dish.price }
+        if (categories.hasOwnProperty(dish.category)) {
+          categories[dish.category].dishes[dish.id] = dishToSave;
+        } else {
+          // let newCategoryToAdd = object.assign({
+          //   categoryId: dish.category_id
+          // });
+          categories[dish.category] = {
+            categoryId: dish.category_id,
+            categoryName: dish.category,
+            dishes: {[dish.id]: dishToSave}
+          };
+          // categories[dish.category] = [dish];
+        }
+      });
+      console.log(categories);
+      res.json(categories);
+    })
+    .catch(function(error) {
+      res.json({ error: error.message });
+    });
+});
+
 // post order
 app.post("/api/transactions", (req, res) => {
-  // 1. insert into "transaction" table
-  db.one("INSERT INTO transaction (id, status) VALUES (DEFAULT, 'placed') RETURNING id")
+  // 1. insert into "order" table
+  db.one(`INSERT INTO transaction (status) VALUES ('placed') RETURNING id`)
     .then(result => {
-      const transactionId = result.id;
+      const orderId = result.id;
       const { items } = req.body;
 
-      // 2. insert into "dish_transaction" table
+      // 2. insert into "order_item" table for each item
       return Promise.all(
         items.map(item => {
           return db.none(
-            "INSERT INTO dish_transaction (dish_id, transaction_id, quantity) VALUES $1, $2, $3)",
-            [item.dishItemId, transactionId, item.quantity]
+            `INSERT INTO dish_transaction (dish_id, order_id, quantity) VALUES ($1, $2, $3)`,
+            [item.menuItemId, orderId, item.quantity]
           );
         })
-      ).then(() => transactionId);
+      ).then(() => orderId);
     })
-    .then(() => res.json({ orderId: orderId }))
+    .then(orderId => res.json({ orderId: orderId }))
     .catch(error => res.json({ error: error.message }));
 });
 

@@ -2,10 +2,10 @@ CREATE DATABASE delivereat;
 
 CREATE TABLE category (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(25) NOT NULL
+    category VARCHAR(25) NOT NULL
 );
 
-INSERT INTO category (name)
+INSERT INTO category (category)
 VALUES
 ('Salads'), 
 ('Sides'), 
@@ -19,12 +19,12 @@ VALUES
 CREATE TABLE dish (
     id SERIAL PRIMARY KEY,
     category_id INT,
-    name VARCHAR(50) NOT NULL,
+    dish VARCHAR(50) NOT NULL,
     price NUMERIC(5,2) NOT NULL,
     FOREIGN KEY (category_id) REFERENCES category (id)
 );
 
-INSERT INTO dish (category_id, name, price)
+INSERT INTO dish (category_id, dish, price)
 VALUES 
 (1, 'Chicken Ceaser Salad', 5.60),
 (1, 'Grilled Salad', 4.99),
@@ -75,20 +75,9 @@ CREATE TABLE transaction (
     mobile VARCHAR(11)
 );
 
-INSERT INTO transaction
-VALUES (1, 'placed', '07912345678');
-
 CREATE TABLE dish_transaction (
     id SERIAL PRIMARY KEY,
     order_id INT,
     dish_id INT,
     quantity INT NOT NULL
 );
-
-INSERT INTO dish_transaction (order_id, dish_id, quantity)
-VALUES 
-(1, 5, 1),
-(1, 10, 2),
-(1, 7, 1),
-(1, 15, 4),
-(1, 11, 3);
