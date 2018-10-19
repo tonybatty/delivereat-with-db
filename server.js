@@ -51,7 +51,7 @@ app.get("/api/transaction/:id", function(req, res) {
   const id = req.params.id;
   db.any(
     `
-  SELECT dish_transaction.order_id, dish.dish, dish.price, dish_transaction.quantity
+  SELECT dish_transaction.order_id, dish.name, dish.price, dish_transaction.quantity
   FROM dish_transaction, dish, transaction
   WHERE transaction.id = dish_transaction.order_id
     AND dish_transaction.dish_id = dish.id
@@ -88,7 +88,7 @@ app.get("/api/dish/:id", function(req, res) {
 // get dishes by category
 app.get("/api/category", function(req, res) {
   db.any(
-    `SELECT dish.category_id, category.category, dish.id, dish.dish, dish.price FROM dish, category
+    `SELECT dish.category_id, category.category, dish.id, dish.name, dish.price FROM dish, category
   WHERE dish.category_id = category.id`
   )
     .then(function(data) {
@@ -96,7 +96,7 @@ app.get("/api/category", function(req, res) {
 
       data.forEach(dish => {
         console.log(dish);
-        let dishToSave = { dishId: dish.id, name: dish.dish, price: dish.price }
+        let dishToSave = { dishId: dish.id, name: dish.name, price: dish.price }
         if (categories.hasOwnProperty(dish.category)) {
           categories[dish.category].dishes[dish.id] = dishToSave;
         } else {

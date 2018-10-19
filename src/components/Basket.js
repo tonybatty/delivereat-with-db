@@ -35,11 +35,12 @@ function Basket({
       </button>
 
       <div className="basket-expanded">
-        {Object.values(basket).map(basketItem => (
+        {Object.keys(basket).map(dishId => (
           <BasketItem
-            key={basketItem.dishId}
-            basketItem={basketItem}
-            dishes={dishes}
+            key={dishId}
+            dishName={dishes[dishId].name}
+            dishId={dishId}
+            quantity={basket[dishId]}
             decreaseQuantity={decreaseQuantity}
             increaseQuantity={increaseQuantity}
           />

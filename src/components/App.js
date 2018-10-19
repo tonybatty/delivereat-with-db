@@ -15,6 +15,8 @@ class App extends React.Component {
     };
 
     this.addToOrder = this.addToOrder.bind(this);
+    this.decreaseQuantity = this.decreaseQuantity.bind(this);
+    this.increaseQuantity = this.increaseQuantity.bind(this);
   }
 
   componentDidMount() {
@@ -30,15 +32,32 @@ class App extends React.Component {
   }
 
   addToOrder(dishId) {
-    let updatedBasket = Object.assign({}, this.state.basket);
-
-    if (this.state.basket.hasOwnProperty(dishId)) {
-      updatedBasket[dishId]++;
-    } else if (!this.state.basket.hasOwnProperty(dishId)){
+    if (this.state.basket[dishId]) {
+      increaseQuantity(dishId);
+    } else {
+      let updatedBasket = Object.assign({}, this.state.basket);
       updatedBasket = Object.assign({}, this.state.basket, {
         [dishId]: 1
       });
+      this.setState({ basket: updatedBasket });
     }
+  }
+
+  increaseQuantity(dishId) {
+    let updatedBasket = Object.assign({}, this.state.basket);
+    updatedBasket[dishId]++;
+    this.setState({ basket: updatedBasket });
+  }
+
+  decreaseQuantity(dishId) {
+    let updatedBasket = Object.assign({}, this.state.basket);
+
+    if (this.state.basket[dishId] === 1) {
+      delete updatedBasket[dishId];
+    } else {
+      updatedBasket[dishId]--;
+    }
+
     this.setState({ basket: updatedBasket });
   }
 
@@ -62,11 +81,13 @@ class App extends React.Component {
             <div className="sticky">
               <h3 className="category-title">Categories</h3>
               <nav className="categories">
-                {Object.keys(this.state.categories).map((category) => (
+                {Object.keys(this.state.categories).map(category => (
                   <a
                     className="categories__category"
                     key={category}
-                    href={`#category${this.state.categories[category].categoryId}`}
+                    href={`#category${
+                      this.state.categories[category].categoryId
+                    }`}
                   >
                     {category}
                   </a>

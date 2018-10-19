@@ -19,12 +19,12 @@ VALUES
 CREATE TABLE dish (
     id SERIAL PRIMARY KEY,
     category_id INT,
-    dish VARCHAR(50) NOT NULL,
+    name VARCHAR(50) NOT NULL,
     price NUMERIC(5,2) NOT NULL,
     FOREIGN KEY (category_id) REFERENCES category (id)
 );
 
-INSERT INTO dish (category_id, dish, price)
+INSERT INTO dish (category_id, name, price)
 VALUES 
 (1, 'Chicken Ceaser Salad', 5.60),
 (1, 'Grilled Salad', 4.99),
