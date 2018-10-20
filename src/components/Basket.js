@@ -1,6 +1,6 @@
 import React from "react";
 import BasketItem from "./BasketItem.js";
-import "../styles/components/basket.scss";
+import "../styles/components/App.scss";
 
 function Basket({
   basket,
@@ -12,7 +12,7 @@ function Basket({
   let subTotal = 0;
 
   Object.keys(basket).map(dishId => {
-    subTotal += dishes[dishId].price * basket[dishId].quantity;
+    subTotal += dishes[dishId].price * basket[dishId];
   });
 
   let deliveryFee = 2.5;

@@ -22,9 +22,14 @@ app.get("/", function(req, res) {
 
 // get dishes
 app.get("/api/dish", function(req, res) {
-  db.any("SELECT * FROM dish")
+  db.any("SELECT dish.id, dish.name, dish.price FROM dish")
     .then(function(data) {
-      res.json(data);
+      let dishes = {};
+
+      data.forEach(dish => {
+        dishes[dish.id] = dish;
+      });
+      res.json(dishes);
     })
     .catch(function(error) {
       res.json({ error: error.message });
@@ -46,21 +51,33 @@ app.get("/api/transaction", function(req, res) {
     });
 });
 
-// get transactions by id
+// get transaction by id
 app.get("/api/transaction/:id", function(req, res) {
   const id = req.params.id;
   db.any(
     `
-  SELECT dish_transaction.order_id, dish.name, dish.price, dish_transaction.quantity
-  FROM dish_transaction, dish, transaction
-  WHERE transaction.id = dish_transaction.order_id
-    AND dish_transaction.dish_id = dish.id
-    AND transaction.id = $1
-  `,
+    SELECT dish_transaction.order_id, dish.name, dish.id, dish.price, dish_transaction.quantity
+    FROM dish_transaction, dish, transaction
+    WHERE transaction.id = dish_transaction.order_id
+      AND dish_transaction.dish_id = dish.id
+      AND transaction.id = $1
+    `,
     [id]
   )
     .then(function(data) {
-      res.json(data);
+      let transaction = { orderId: data[0].order_id, subTotal: 0, dishes: {} };
+      console.log(data);
+      data.forEach(dish => {
+        transaction.dishes[dish.id] = {
+          dishId: dish.id,
+          name: dish.name,
+          price: dish.price,
+          quantity: dish.quantity
+        };
+        transaction.subTotal += Number(dish.price) * Number(dish.quantity);
+      });
+
+      res.json(transaction);
     })
     .catch(function(error) {
       res.json({ error: error.message });
@@ -70,13 +87,7 @@ app.get("/api/transaction/:id", function(req, res) {
 // get dish by id
 app.get("/api/dish/:id", function(req, res) {
   const id = req.params.id;
-  db.any(
-    `
-    SELECT * from dish
-    WHERE dish.id = $1
-  `,
-    [id]
-  )
+  db.any(`SELECT * from dish WHERE dish.id = $1`, [id])
     .then(function(data) {
       res.json(data);
     })
@@ -88,30 +99,31 @@ app.get("/api/dish/:id", function(req, res) {
 // get dishes by category
 app.get("/api/category", function(req, res) {
   db.any(
-    `SELECT dish.category_id, category.category, dish.id, dish.name, dish.price FROM dish, category
-  WHERE dish.category_id = category.id`
+    `
+      SELECT dish.category_id, category.category, dish.id, dish.name, dish.price 
+      FROM dish, category
+      WHERE dish.category_id = category.id
+    `
   )
     .then(function(data) {
       let categories = {};
 
       data.forEach(dish => {
-        console.log(dish);
-        let dishToSave = { dishId: dish.id, name: dish.name, price: dish.price }
+        let dishToSave = {
+          dishId: dish.id,
+          name: dish.name,
+          price: dish.price
+        };
         if (categories.hasOwnProperty(dish.category)) {
           categories[dish.category].dishes[dish.id] = dishToSave;
         } else {
-          // let newCategoryToAdd = object.assign({
-          //   categoryId: dish.category_id
-          // });
           categories[dish.category] = {
             categoryId: dish.category_id,
             categoryName: dish.category,
-            dishes: {[dish.id]: dishToSave}
+            dishes: { [dish.id]: dishToSave }
           };
-          // categories[dish.category] = [dish];
         }
       });
-      console.log(categories);
       res.json(categories);
     })
     .catch(function(error) {
@@ -120,7 +132,7 @@ app.get("/api/category", function(req, res) {
 });
 
 // post order
-app.post("/api/transactions", (req, res) => {
+app.post("/api/transaction", (req, res) => {
   // 1. insert into "order" table
   db.one(`INSERT INTO transaction (status) VALUES ('placed') RETURNING id`)
     .then(result => {
@@ -132,12 +144,44 @@ app.post("/api/transactions", (req, res) => {
         items.map(item => {
           return db.none(
             `INSERT INTO dish_transaction (dish_id, order_id, quantity) VALUES ($1, $2, $3)`,
-            [item.menuItemId, orderId, item.quantity]
+            [item.dishId, orderId, item.quantity]
           );
         })
       ).then(() => orderId);
     })
-    .then(orderId => res.json({ orderId: orderId }))
+    .then(orderId => {
+      db.any(
+        `
+        SELECT dish_transaction.order_id, dish.name, dish.id, dish.price, dish_transaction.quantity
+        FROM dish_transaction, dish, transaction
+        WHERE transaction.id = dish_transaction.order_id
+        AND dish_transaction.dish_id = dish.id
+        AND transaction.id = $1
+        `,
+        [orderId]
+      )
+        .then(function(data) {
+          let transaction = {
+            orderId: data[0].order_id,
+            subTotal: 0,
+            dishes: {}
+          };
+          data.forEach(dish => {
+            transaction.dishes[dish.id] = {
+              dishId: dish.id,
+              name: dish.name,
+              price: dish.price,
+              quantity: dish.quantity
+            };
+            transaction.subTotal += Number(dish.price) * Number(dish.quantity);
+          });
+
+          res.json(transaction);
+        })
+        .catch(function(error) {
+          res.json({ error: error.message });
+        });
+    })
     .catch(error => res.json({ error: error.message }));
 });
 

@@ -1,7 +1,7 @@
 import React from "react";
 import Menu from "./Menu.js";
 import Basket from "./Basket.js";
-
+import Checkout from "./Checkout";
 import "../styles/components/App.scss";
 
 class App extends React.Component {
@@ -11,12 +11,15 @@ class App extends React.Component {
     this.state = {
       dishes: {},
       categories: {},
-      basket: {}
+      basket: {},
+      checkout: false,
     };
 
     this.addToOrder = this.addToOrder.bind(this);
     this.decreaseQuantity = this.decreaseQuantity.bind(this);
     this.increaseQuantity = this.increaseQuantity.bind(this);
+    this.checkout = this.checkout.bind(this);
+    this.closeCheckout = this.closeCheckout.bind(this);
   }
 
   componentDidMount() {
@@ -33,7 +36,7 @@ class App extends React.Component {
 
   addToOrder(dishId) {
     if (this.state.basket[dishId]) {
-      increaseQuantity(dishId);
+      this.increaseQuantity(dishId);
     } else {
       let updatedBasket = Object.assign({}, this.state.basket);
       updatedBasket = Object.assign({}, this.state.basket, {
@@ -61,9 +64,28 @@ class App extends React.Component {
     this.setState({ basket: updatedBasket });
   }
 
+  checkout() {
+    this.setState({
+      checkout: true
+    })
+  }
+
+  closeCheckout() {
+    this.setState({
+      checkout: false
+    });
+  }
+
   render() {
     return (
       <div className="container">
+        {this.state.checkout ? (
+          <Checkout
+            basket={this.state.basket}
+            dishes={this.state.dishes}
+            closeCheckout={this.closeCheckout}
+          />
+        ) : null}
         <header className="header">
           <div className="header__container">
             <img
@@ -75,7 +97,6 @@ class App extends React.Component {
             </h1>
           </div>
         </header>
-
         <main className="main">
           <aside className="main__aside-left">
             <div className="sticky">
@@ -120,7 +141,6 @@ class App extends React.Component {
             </div>
           </aside>
         </main>
-
         <footer className="footer" />
       </div>
     );

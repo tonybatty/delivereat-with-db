@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/components/basketItem.scss";
+import "../styles/components/App.scss";
 
 function BasketItem({ dishId, quantity, dishName, decreaseQuantity, increaseQuantity }) {
   return (

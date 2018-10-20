@@ -79,6 +79,11 @@ hr {
   background-color: $line-color-light;
 }
 
+// .container {
+//   display: flex;
+//   justify-content: center;
+// }
+
 .header {
   width: 100vw;
   position: relative;
@@ -228,7 +233,6 @@ hr {
   .main {
     padding: 0 30px;
     flex-direction: row;
-
 
     &__aside-left {
       display: unset;
