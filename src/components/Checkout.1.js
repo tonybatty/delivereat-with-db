@@ -32,21 +32,16 @@ class Checkout extends React.Component {
   }
 
   handleClick(event) {
-    console.log(event.target.className);
     if (
-      event.target.className === "checkout" ||
-      event.target.className === "close"
+      event.target.className == "checkout" ||
+      event.target.className == "close"
     ) {
       this.props.closeCheckout();
-    } else if (event.target.className === "checkout__checkout-btn button") {
-      this.placeOrder;
     }
   }
 
-  placeOrder(event) {
-    event.preventDefault();
-    console.log("place order");
-
+  placeOrder() {
+    console.log("place order")
     const basket = this.props.basket;
     const basketCheckout = {
       items: Object.keys(basket).map(dishId => {
@@ -54,23 +49,23 @@ class Checkout extends React.Component {
       })
     };
 
-    fetch("api/transaction", {
-      method: "post",
-      body: JSON.stringify(basketCheckout),
-      headers: {
-        "content-Type": "application/json"
-      }
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log("order post success: ", JSON.stringify(data));
-        console.log("order id: " + data.orderId);
-        this.setState({
-          order: data,
-          dishes: data.dishes
-        });
-      })
-      .catch(error => console.error("Error: ", error));
+    // fetch("api/transaction", {
+    //   method: "post",
+    //   body: JSON.stringify(basketCheckout),
+    //   headers: {
+    //     "content-Type": "application/json"
+    //   }
+    // })
+    //   .then(response => response.json())
+    //   .then(data => {
+    //     console.log("order post success: ", JSON.stringify(data));
+    //     console.log("order id: " + data.orderId);
+    //     this.setState({
+    //       order: data,
+    //       dishes: data.dishes
+    //     });
+    //   })
+    //   .catch(error => console.error("Error: ", error));
   }
 
   render() {
@@ -85,44 +80,43 @@ class Checkout extends React.Component {
     return (
       <div className="checkout" onClick={event => this.handleClick(event)}>
         <div className="checkout__content">
-          <div className="checkout-container">
-            <span className="close">&times;</span>
-            <h3 className="checkout-title">Your Order</h3>
+          <span className="close">&times;</span>
+          <h3 className="checkout-title">Your Order</h3>
 
-            {Object.keys(this.props.basket).map(dishId => (
-              <div className="basketItem" key={dishId}>
-                <p className="basketItem__name">
-                  {this.props.basket[dishId]} x {this.props.dishes[dishId].name}
-                </p>
-                <p className="basketItem__price">
-                  £
-                  {(
-                    this.props.dishes[dishId].price * this.props.basket[dishId]
-                  ).toFixed(2)}
-                </p>
-              </div>
-            ))}
-
-            <hr />
-
-            <div className="basket__subtotal">
-              <p>Subtotal</p>
-              <p>£{this.getTotals().subTotal}</p>
+          {Object.keys(this.props.basket).map(dishId => (
+            <div className="basketItem" key={dishId}>
+              <p className="basketItem__name">
+                {this.props.basket[dishId]} x {this.props.dishes[dishId].name}
+              </p>
+              <p className="basketItem__price">
+                £
+                {(
+                  this.props.dishes[dishId].price * this.props.basket[dishId]
+                ).toFixed(2)}
+              </p>
             </div>
+          ))}
 
-            <div className="basket__delivery">
-              <p>Delivery Fee</p>
-              <p>£{this.getTotals().deliveryFee}</p>
-            </div>
+          <hr />
 
-            <hr />
-
-            <div className="basket__total">
-              <h4>Total</h4>
-              <p>£{this.getTotals().total}</p>
-            </div>
+          <div className="basket__subtotal">
+            <p>Subtotal</p>
+            <p>£{this.getTotals().subTotal}</p>
           </div>
-          <form onSubmit={event => this.placeOrder(event)}>
+
+          <div className="basket__delivery">
+            <p>Delivery Fee</p>
+            <p>£{this.getTotals().deliveryFee}</p>
+          </div>
+
+          <hr />
+
+          <div className="basket__total">
+            <h4>Total</h4>
+            <p>£{this.getTotals().total}</p>
+          </div>
+
+          <form>
             <ul className="form">
               <li>
                 <label htmlFor="name">Name</label>
@@ -141,7 +135,10 @@ class Checkout extends React.Component {
                 <textarea rows="4" id="message" />
               </li>
               <li>
-                <button className="checkout__checkout-btn button">
+                <button
+                  className="checkout__checkout-btn button"
+                  onClick={() => this.placeOrder()}
+                >
                   Place Order
                 </button>
               </li>

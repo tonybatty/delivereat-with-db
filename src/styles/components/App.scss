@@ -39,6 +39,7 @@ a {
 }
 
 .button {
+  letter-spacing: 0.09em;
   background-color: $primary-color;
   cursor: pointer;
   border: none;
@@ -199,6 +200,7 @@ hr {
 
 /* Tablet Layout */
 @media (min-width: 768px) {
+
   .header__container {
     height: 210px;
     max-height: 30vh;
@@ -225,6 +227,7 @@ hr {
 
 /* Desktop Layout */
 @media (min-width: 960px) {
+
   .header__container {
     height: 280px;
     max-height: 35vh;

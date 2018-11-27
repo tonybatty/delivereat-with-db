@@ -26,46 +26,48 @@ class OrderPlaced extends React.Component {
     return (
       <div className="checkout" onClick={event => this.handleClick(event)}>
         <div className="checkout__content">
-          <span className="close">&times;</span>
-          <h3 className="checkout-title">Order Placed!</h3>
+          <div className="checkout-container">
+            <span className="close">&times;</span>
+            <h3 className="checkout-title">Order Placed!</h3>
 
-          <h4 className="checkout-title">
-            Your order Number is <b>{this.props.order.orderId}</b>
-          </h4>
+            <h4 className="checkout-title">
+              Your order Number is <b>{this.props.order.orderId}</b>
+            </h4>
 
-          {Object.keys(this.props.dishes).map(dishId => (
-            <div className="basketItem" key={dishId}>
-              <p className="basketItem__name">
-                {this.props.order.dishes[dishId].quantity} x{" "}
-                {this.props.order.dishes[dishId].name}
-              </p>
-              <p className="basketItem__price">
-                £
-                {(
-                  this.props.dishes[dishId].price *
-                  this.props.dishes[dishId].quantity
-                ).toFixed(2)}
-              </p>
+            {Object.keys(this.props.dishes).map(dishId => (
+              <div className="basketItem" key={dishId}>
+                <p className="basketItem__name">
+                  {this.props.order.dishes[dishId].quantity} x{" "}
+                  {this.props.order.dishes[dishId].name}
+                </p>
+                <p className="basketItem__price">
+                  £
+                  {(
+                    this.props.dishes[dishId].price *
+                    this.props.dishes[dishId].quantity
+                  ).toFixed(2)}
+                </p>
+              </div>
+            ))}
+
+            <hr />
+
+            <div className="basket__subtotal">
+              <p>Subtotal</p>
+              <p>£{this.props.order.subTotal.toFixed(2)}</p>
             </div>
-          ))}
 
-          <hr />
+            <div className="basket__delivery">
+              <p>Delivery Fee</p>
+              <p>£2.50</p>
+            </div>
 
-          <div className="basket__subtotal">
-            <p>Subtotal</p>
-            <p>£{this.props.order.subTotal.toFixed(2)}</p>
-          </div>
+            <hr />
 
-          <div className="basket__delivery">
-            <p>Delivery Fee</p>
-            <p>£2.50</p>
-          </div>
-
-          <hr />
-
-          <div className="basket__total">
-            <h4>Total</h4>
-            <p>£{(this.props.order.subTotal + 2.5).toFixed(2)}</p>
+            <div className="basket__total">
+              <h4>Total</h4>
+              <p>£{(this.props.order.subTotal + 2.5).toFixed(2)}</p>
+            </div>
           </div>
         </div>
       </div>
