@@ -1,5 +1,3 @@
-CREATE DATABASE delivereat;
-
 CREATE TABLE category (
     id SERIAL PRIMARY KEY,
     category VARCHAR(25) NOT NULL
