@@ -1,5 +1,5 @@
 import React from "react";
-import OrderPlaced from "./orderPlaced.js";
+import OrderPlaced from "./OrderPlaced.js";
 import "../styles/components/Checkout.scss";
 
 class Checkout extends React.Component {
