@@ -90,7 +90,8 @@ class App extends React.Component {
           <div className="header__container">
             <img
               className="header__container__image"
-              src="../static/images/header.jpg"
+              // src="../static/images/header.jpg"
+              src="https://unsplash.com/photos/-YHSwy6uqvk"
             />
             <h1 className="header-title">
               Tony's Steak House <hr />
