@@ -4,7 +4,7 @@ A database-backed restaurant menu order app.
 
 [View live demo](https://takeaway-menu.herokuapp.com/)
 
-![ScreenShot](/screenshots/deliverEatDesktopScreenshot.png)
+![ScreenShot](/screenshots/delivereatGithub.png)
 
 ## Technologies
 
